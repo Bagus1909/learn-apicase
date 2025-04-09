@@ -81,6 +81,34 @@ function App() {
     }
   };
 
+  const handleUpdatePost = async (id) => {
+    setLoading(true);
+
+    try {
+      const response = await doRequest({
+        url: `https://jsonplaceholder.typicode.com/posts/${id}`,
+        method: "PUT",
+        mode: "cors",
+        body: {
+          title: "Baru",
+          body: "Lorem ipsum dolor, sit amet consectetur adipisicing elit. Consectetur, ipsum porro blanditiis commodi tempore alias reiciendis aspernatur maiores doloribus sapiente omnis debitis reprehenderit iure animi rerum eveniet laboriosam neque esse molestiae at sunt quas. Error eos modi sed quaerat sunt beatae, quae eum nobis animi! Quae sint omnis beatae doloribus eius facere odio, optio, debitis praesentium fugiat, voluptatibus esse magni. Molestiae doloribus praesentium sit optio laborum blanditiis consequatur exercitationem nesciunt amet cupiditate incidunt inventore impedit id a reiciendis at nihil, voluptates error voluptas reprehenderit eaque. Qui fuga placeat adipisci impedit veritatis! Hic placeat, dolorem debitis atque dicta quo. Exercitationem, voluptatem?",
+          userId: 1,
+        },
+      });
+
+      if (response.error) {
+        throw new Error(`HTTP error! ${response.error.message}`);
+      }
+
+      const data = await response.result.body;
+      setPosts((prev) => prev.map((post) => (post.id === id ? data : post)));
+    } catch (error) {
+      console.log("error fetch api", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleDeletePost = async (id) => {
     setLoading(true);
     try {
@@ -115,6 +143,7 @@ function App() {
           {posts?.map((post) => (
             <li key={post.id}>
               {post.id} {post.title} {post.body}
+              <button onClick={() => handleUpdatePost(post.id)}>edit</button>
               <button onClick={() => handleDeletePost(post.id)}>delete</button>
             </li>
           ))}
